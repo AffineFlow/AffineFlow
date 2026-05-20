@@ -1,6 +1,6 @@
 [build-system]
-requires = ["scikit-build-core", "pybind11"]
-build-backend = "scikit_build_core.build"
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "ml-engine-core"
@@ -28,8 +28,6 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/MLEngineProject/MLEngine"
 
-[tool.scikit-build]
-cmake.version = ">=3.18"
-
-[tool.cibuildwheel]
-skip = "*-musllinux_*"
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mlengine*"]
