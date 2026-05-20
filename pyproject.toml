@@ -3,7 +3,7 @@ requires = ["scikit-build-core", "pybind11"]
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "mlengine"
+name = "ml-engine-core"
 version = "0.1.0"
 description = "A unified, high-performance Machine Learning Framework with native C++ backends"
 readme = "README.md"
@@ -26,7 +26,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/YourOrganizationName/MLEngine"
+Homepage = "https://github.com/MLEngineProject/MLEngine"
 
 [tool.scikit-build]
 cmake.version = ">=3.18"
