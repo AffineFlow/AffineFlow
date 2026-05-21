@@ -1,4 +1,6 @@
-from . import classical
-from . import neural
+__version__ = "0.1.1"
 
-__version__ = "0.1.0"
+from . import neural
+from . import classical
+
+__all__ = ["neural", "classical"]
