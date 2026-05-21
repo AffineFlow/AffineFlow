@@ -12,7 +12,7 @@ Under the hood, MLEngine acts as a pure Python API routing to highly optimized, 
 Install the complete suite via PyPI (this automatically installs both C++ backend engines):
 
 ```bash
-pip install mlengine
+pip install ml-engine-core
 ```
 
 ## Modules Overview
