@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ml-engine-core"
-version = "0.1.1"
+version = "0.1.2"
 description = "A unified, high-performance Machine Learning Framework with native C++ backends"
 readme = "README.md"
 license = {text = "MIT"}
