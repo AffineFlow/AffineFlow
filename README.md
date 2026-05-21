@@ -1,4 +1,4 @@
-# MLEngine
+# ML Engine Core
 
 [![PyPI version](https://img.shields.io/pypi/v/mlengine?logo=pypi&logoColor=white)](https://pypi.org/project/mlengine/)
 [![Python](https://img.shields.io/pypi/pyversions/mlengine?logo=python&logoColor=white)](https://pypi.org/project/mlengine/)
