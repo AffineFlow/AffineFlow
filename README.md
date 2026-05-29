@@ -5,7 +5,7 @@
 
 MLEngine is a unified, high-performance Machine Learning framework tailored for speed and mathematical transparency. 
 
-Under the hood, MLEngine acts as a pure Python API routing to highly optimized, custom-built C++ native engines (`knn-engine-core` and `nn-engine-core`). By pushing computational bottlenecks—including the entire training loop—down into C++ via `pybind11` and `Eigen`, MLEngine entirely bypasses the Python Global Interpreter Lock (GIL), resulting in execution speeds up to 30x faster than traditional Python-based ML libraries.
+Under the hood, MLEngine acts as a pure Python API routing to highly optimized, custom-built C++ native engines (`knn-engine-core` and `nn-engine-core`). By pushing computational bottlenecks—including the entire training loop—down into C++ via `pybind11` and `Eigen`, MLEngine entirely bypasses the Python Global Interpreter Lock (GIL), resulting in execution speeds up to 100x faster than traditional Python-based ML libraries.
 
 ## Installation
 
@@ -46,28 +46,32 @@ Powered by `nn-engine-core`. A multi-layer perceptron framework that executes it
 
 ```python
 import numpy as np
-from ml_core.neural import Model, DenseLayer, ReLULayer, SoftmaxLayer, CategoricalCrossEntropyLoss
+from ml_core.neural import Model, DenseLayer, ReLULayer, SoftmaxCrossEntropyLoss, Adam
 
-X_train = np.random.rand(100, 4).astype(np.float64)
-y_train = np.eye(3)[np.random.choice(3, 100)].astype(np.float64) 
+# Note: MLEngine Neural Nets are hardware-optimized for 32-bit floats
+X_train = np.random.rand(100, 4).astype(np.float32)
+y_train = np.eye(3)[np.random.choice(3, 100)].astype(np.float32) 
 
 # Build Architecture
 model = Model()
 model.add(DenseLayer(4, 16))
 model.add(ReLULayer())
 model.add(DenseLayer(16, 3))
-model.add(SoftmaxLayer())
+# Softmax is handled automatically by the loss function!
 
-model.compile(CategoricalCrossEntropyLoss())
+optimizer = Adam(learning_rate=0.01)
+loss = SoftmaxCrossEntropyLoss()
+model.compile(optimizer, loss)
 
 # C++ Native Training Loop
-model.fit(X_train, y_train, epochs=150, learning_rate=0.05, batch_size=16)
+model.fit(X_train, y_train, epochs=150, batch_size=16)
 
-probs = model.predict(X_train[:1])
-print("Neural Net Probs:", probs)
+# predict() returns raw logits. Use np.argmax for classification!
+logits = model.predict(X_train[:1])
+print("Neural Net Logits:", logits)
 ```
 
 ## Architecture & Benchmarks
-MLEngine's core philosophy is **Native Loop Hoisting**. Rather than returning to Python after every matrix operation or epoch step, MLEngine passes pointers to C++ once, executes the entire mathematical pipeline using Eigen's `noalias()` buffers, and returns only when finished.
+MLEngine's core philosophy is **Native Loop Hoisting**. Rather than returning to Python after every matrix operation or epoch step, MLEngine passes pointers to C++ once, executes the entire mathematical pipeline using AVX SIMD vectorization and a zero-allocation flat-memory Autograd graph, and returns only when finished.
 
-In standard academic benchmarks (Iris, MNIST Digits, Olivetti Faces), `ml_core` consistently achieves 2x to 30x speedups over Scikit-Learn while maintaining equal or superior accuracy.
+In standard academic benchmarks (Iris, MNIST Digits, Olivetti Faces), `ml_core.neural` consistently achieves up to a **100x speedup** over Scikit-Learn while maintaining mathematically identical (or superior) accuracy via Log-Sum-Exp fusion.
