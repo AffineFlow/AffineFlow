@@ -1,3 +1,0 @@
-numpy
-knn-engine-core>=0.1.2
-nn-engine-core>=0.1.4
