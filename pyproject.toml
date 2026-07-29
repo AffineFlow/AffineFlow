@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ml-engine-core"
-version = "0.1.5"
+name = "AffineFlow"
+version = "0.1.0"
 description = "A unified, high-performance Machine Learning Framework with native C++ backends"
 readme = "README.md"
 license = {text = "MIT"}
@@ -21,8 +21,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/MLEngineProject/MLEngine"
+Homepage = "https://github.com/AffineFlow/AffineFlow"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["mlengine*"]
+include = ["affineflow*"]

@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/ml-engine-core
+      url: https://pypi.org/p/AffineFlow
     permissions:
       id-token: write
     steps:

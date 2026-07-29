@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+AffineFlow.egg-info/PKG-INFO
+AffineFlow.egg-info/SOURCES.txt
+AffineFlow.egg-info/dependency_links.txt
+AffineFlow.egg-info/requires.txt
+AffineFlow.egg-info/top_level.txt
+affineflow/__init__.py
+affineflow/knn.py
+affineflow/nn.py

@@ -17,22 +17,22 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.exceptions import ConvergenceWarning
 
-import mlengine as ml
+import affineflow as af
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 def seed_everything(seed: int) -> None:
     np.random.seed(seed)
-    ml.nn.set_seed(seed)
+    af.nn.set_seed(seed)
 
 # ==========================================
-# MLEngine Neural Network Architecture
+# AffineFlow Neural Network Architecture
 # ==========================================
-class BenchmarkNet(ml.nn.Module):
+class BenchmarkNet(af.nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim):
         super().__init__()
-        self.fc1 = self.add_module(ml.nn.DenseLayer(input_dim, hidden_dim))
-        self.relu = self.add_module(ml.nn.ReLULayer())
-        self.fc2 = self.add_module(ml.nn.DenseLayer(hidden_dim, output_dim))
+        self.fc1 = self.add_module(af.nn.DenseLayer(input_dim, hidden_dim))
+        self.relu = self.add_module(af.nn.ReLULayer())
+        self.fc2 = self.add_module(af.nn.DenseLayer(hidden_dim, output_dim))
 
     def forward(self, tape, x):
         x = self.fc1(tape, x)
@@ -71,17 +71,17 @@ def test_dataset(name, X, y, epochs, lr, batch_size, hidden_size, k_neighbors, s
     X_train_full_scaled = scaler.transform(X_train_full).astype(np.float32)
 
     # ==========================================
-    # 1. MLEngine Neural Network
+    # 1. AffineFlow Neural Network
     # ==========================================
     model = BenchmarkNet(num_features, hidden_size, num_classes)
-    optimizer = ml.nn.Adam(learning_rate=np.float32(lr))
-    loss_fn = ml.nn.SoftmaxCrossEntropyLoss()
-    regularizer = ml.nn.L2Regularizer(l2=np.float32(0.0001)) if use_l2 else None
+    optimizer = af.nn.Adam(learning_rate=np.float32(lr))
+    loss_fn = af.nn.SoftmaxCrossEntropyLoss()
+    regularizer = af.nn.L2Regularizer(l2=np.float32(0.0001)) if use_l2 else None
 
-    train_loader = ml.nn.DataLoader(X_train_scaled, y_train_oh, batch_size=batch_size, shuffle=True, drop_last=True)
-    val_loader = ml.nn.DataLoader(X_val_scaled, y_val_oh, batch_size=batch_size, shuffle=False)
+    train_loader = af.nn.DataLoader(X_train_scaled, y_train_oh, batch_size=batch_size, shuffle=True, drop_last=True)
+    val_loader = af.nn.DataLoader(X_val_scaled, y_val_oh, batch_size=batch_size, shuffle=False)
     
-    trainer = ml.nn.JITCompiler(model, optimizer, loss_fn, regularizer)
+    trainer = af.nn.JITCompiler(model, optimizer, loss_fn, regularizer)
 
     t0 = time.perf_counter()
     trainer.fit(train_loader, epochs=epochs, val_dataloader=val_loader, tol=1e-4, n_iter_no_change=10, verbose=False)
@@ -120,13 +120,13 @@ def test_dataset(name, X, y, epochs, lr, batch_size, hidden_size, k_neighbors, s
     sk_nn_acc = accuracy_score(y_test, sk_nn_preds) * 100
 
     # ==========================================
-    # 3. MLEngine K-Nearest Neighbors
+    # 3. AffineFlow K-Nearest Neighbors
     # ==========================================
-    cfg = ml.knn.KNNConfig()
+    cfg = af.knn.KNNConfig()
     cfg.k = k_neighbors
     cfg.variance = float(num_features) 
     
-    knn_engine = ml.knn.KNNEngine(cfg)
+    knn_engine = af.knn.KNNEngine(cfg)
     
     y_train_full_str = [str(label) for label in y_train_full]
     
@@ -156,22 +156,22 @@ def test_dataset(name, X, y, epochs, lr, batch_size, hidden_size, k_neighbors, s
     # Results Display
     # ==========================================
     print("\n[ Neural Networks (MLP) ]")
-    print(f"🚀 MLEngine (JIT C++) — Accuracy: {ml_nn_acc:6.2f}%  |  Time: {ml_nn_time:.4f}s")
+    print(f"🚀 AffineFlow (JIT C++) — Accuracy: {ml_nn_acc:6.2f}%  |  Time: {ml_nn_time:.4f}s")
     print(f"🐢 Sklearn (Adam)   — Accuracy: {sk_nn_acc:6.2f}%  |  Time: {sk_nn_time:.4f}s")
     print(f"⚡ NN Speedup       — {sk_nn_time / ml_nn_time:.2f}x Faster")
 
     print("\n[ K-Nearest Neighbors ]")
-    print(f"🚀 MLEngine (Native)  — Accuracy: {ml_knn_acc:6.2f}%  |  Time: {ml_knn_time:.4f}s")
+    print(f"🚀 AffineFlow (Native)  — Accuracy: {ml_knn_acc:6.2f}%  |  Time: {ml_knn_time:.4f}s")
     print(f"🐢 Sklearn (KDTree) — Accuracy: {sk_knn_acc:6.2f}%  |  Time: {sk_knn_time:.4f}s")
     print(f"⚡ KNN Speedup      — {sk_knn_time / ml_knn_time:.2f}x Faster")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run MLEngine complete benchmark.")
+    parser = argparse.ArgumentParser(description="Run AffineFlow complete benchmark.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     args = parser.parse_args()
 
-    print("🔥 MLEngine Full Suite Benchmark Starting...\n")
+    print("🔥 AffineFlow Full Suite Benchmark Starting...\n")
 
     iris = load_iris()
     test_dataset(

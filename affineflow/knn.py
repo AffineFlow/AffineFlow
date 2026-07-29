@@ -1,5 +1,5 @@
 """
-Classical machine learning module for MLEngine.
+Classical machine learning module for AffineFlow.
 
 Dynamically exposes all components from the `knn_core` C++ extension.
 """

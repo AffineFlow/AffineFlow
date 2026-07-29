@@ -1,5 +1,5 @@
 """
-Neural network module for MLEngine.
+Neural network module for AffineFlow.
 
 Dynamically exposes all components from the `nnengine` package to ensure
 seamless integration without requiring new releases when `NNEngine` changes.
