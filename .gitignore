@@ -1,0 +1,78 @@
+# ==========================================
+# Python & Bytecode
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.python-version
+
+# ==========================================
+# C / C++ Extensions & Build Artifacts
+# ==========================================
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.pyd
+build/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+Makefile
+
+# ==========================================
+# Distribution / Packaging
+# ==========================================
+dist/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+sdist/
+wheels/
+
+# ==========================================
+# Virtual Environments
+# ==========================================
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# ==========================================
+# IDEs & Code Editors
+# ==========================================
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ==========================================
+# Testing & Coverage
+# ==========================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ==========================================
+# Temporary Benchmark & Data Files
+# ==========================================
+*.log
+*.tmp
+*.csv
+!examples/*.csv
+!tests/*.csv
