@@ -44,6 +44,26 @@ jobs:
           name: cibw-sdist
           path: dist/*.tar.gz
 
+  upload_release_assets:
+    name: Upload assets to GitHub Release
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    permissions:
+      contents: write
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+
   publish-to-pypi:
     name: Publish Python distribution to PyPI
     needs: [build_wheels, build_sdist]

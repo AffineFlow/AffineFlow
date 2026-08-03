@@ -76,3 +76,4 @@ htmlcov/
 *.csv
 !examples/*.csv
 !tests/*.csv
+full_codebase.txt
