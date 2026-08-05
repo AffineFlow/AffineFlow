@@ -1,13 +1,14 @@
 """
 Neural network module for AffineFlow.
-
-Dynamically exposes all components from the `nnengine` package to ensure
-seamless integration without requiring new releases when `NNEngine` changes.
 """
 
-import nnengine
-from nnengine import *
+try:
+    import affineflow_nn
+    from affineflow_nn import *  # type: ignore[wildcard-import]
 
-__all__ = getattr(nnengine, "__all__", [
-    name for name in dir(nnengine) if not name.startswith("_")
-])
+    __all__ = getattr(affineflow_nn, "__all__", [
+        name for name in dir(affineflow_nn) if not name.startswith("_")
+    ])
+except ImportError:
+    __all__ = []
+    pass
