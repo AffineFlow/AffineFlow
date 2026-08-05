@@ -470,9 +470,77 @@ def run_classification_benchmark(seeds=SEEDS):
     print(f"AffineFlow-NN JIT | Acc: {nn_acc:.2f}% | Time: {nn_time:.4f}s")
     print(f"AffineFlow-NN Eag | Acc: {eag_acc:.2f}% | Time: {eag_time:.4f}s")
 
+from affineflow.compose import Pipeline
+from affineflow.adapters import NNEstimator
+
+# ==========================================
+# TASK 4: THE HYBRID PIPELINE (ML -> NN)
+# Chaining AffineFlow-ML PCA into AffineFlow-NN
+# ==========================================
+def run_hybrid_pipeline_benchmark():
+    print(f"\n{'-'*20} BENCHMARK: HYBRID PIPELINE (FACES PCA -> NN) {'-'*20}")
+    
+    faces = fetch_olivetti_faces()
+    X, y = faces.data.astype(np.float32), faces.target
+    
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+    
+    # One-hot encode targets for the neural network
+    y_train_onehot = np.eye(40, dtype=np.float32)[y_train]
+    
+    # 1. Define the native neural network (expecting PCA-reduced dimensions)
+    # 0.95 variance on Olivetti faces usually yields ~100-150 components
+    # We will let PCA run first, then dynamically size the NN in a real scenario, 
+    # but for simplicity, we assume a dense block here.
+    nn_model = afnn.Module()
+    nn_model.fc1 = afnn.DenseLayer(123, 64) # Assuming 123 components from PCA
+    nn_model.act = afnn.ReLULayer()
+    nn_model.fc2 = afnn.DenseLayer(64, 40)
+    
+    def forward(x):
+        return nn_model.fc2(nn_model.act(nn_model.fc1(x)))
+    
+    nn_model.forward = forward
+    
+    # 2. Wrap the NN in the Scikit-Learn adapter
+    optimizer = afnn.Adam(learning_rate=0.001)
+    optimizer.set_parameters(nn_model.parameters())
+    
+    nn_estimator = NNEstimator(
+        model=nn_model,
+        optimizer=optimizer,
+        loss_fn=afnn.SoftmaxCrossEntropyLoss(),
+        epochs=30,
+        batch_size=16,
+        verbose=False
+    )
+    
+    # 3. Build the Hybrid Pipeline
+    hybrid_pipeline = Pipeline([
+        ("pca", ml.PCA(n_components=0.95)),
+        ("classifier", nn_estimator)
+    ])
+    
+    # 4. Execute the seamless C++ -> Python -> C++ chain
+    t0 = time.perf_counter()
+    hybrid_pipeline.fit(X_train, y_train_onehot)
+    train_time = time.perf_counter() - t0
+    
+    t0 = time.perf_counter()
+    raw_preds = hybrid_pipeline.predict(X_test)
+    class_preds = np.argmax(raw_preds, axis=1)
+    infer_time = time.perf_counter() - t0
+    
+    acc = accuracy_score(y_test, class_preds) * 100
+    
+    print(f"Hybrid Pipeline | Acc: {acc:.2f}% | Train: {train_time:.4f}s | Infer: {infer_time:.4f}s")
+
 
 if __name__ == "__main__":
     print("Starting Comprehensive Multi-Seed AffineFlow Validation Suite...")
     run_knn_classification()
     run_regression_benchmark()
     run_classification_benchmark()
+    run_hybrid_pipeline_benchmark()

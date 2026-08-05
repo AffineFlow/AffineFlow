@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "AffineFlow"
-version = "0.1.2"
+version = "0.1.3"
 description = "A unified, high-performance Machine Learning Framework with native C++ backends"
 readme = "README.md"
 license = {text = "MIT"}
@@ -30,3 +30,16 @@ include = ["affineflow*"]
 
 [tool.setuptools.package-data]
 affineflow = ["py.typed", "*.pyi"]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "scikit-learn"
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-v"
+testpaths = [
+    "tests/python",
+]
